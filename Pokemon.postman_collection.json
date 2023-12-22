@@ -1,0 +1,154 @@
+{
+	"info": {
+		"_postman_id": "36f6adda-14d3-4935-adca-0f65ebd5950b",
+		"name": "Pokemon",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "21442467"
+	},
+	"item": [
+		{
+			"name": "Get the url for the ability Drizzle",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"    let abilitys = pm.response.json().results;",
+							"    ",
+							"    abilitys.forEach(function (ability) {",
+							"        if(ability.name == \"drizzle\"){",
+							"            pm.collectionVariables.set('urlAbility', ability.url)",
+							"        }",
+							"        ",
+							"    });",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://pokeapi.co/api/v2/ability/",
+					"protocol": "https",
+					"host": [
+						"pokeapi",
+						"co"
+					],
+					"path": [
+						"api",
+						"v2",
+						"ability",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get the pokemon url and name in the variables",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Stores the ID from the response in a global variable",
+							"var pokemons = pm.response.json().pokemon;",
+							"pm.collectionVariables.set(\"pokemonUrl\", pokemons[0].pokemon.url);",
+							"pm.collectionVariables.set(\"pokemonName\", pokemons[0].pokemon.name);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{urlAbility}}",
+					"host": [
+						"{{urlAbility}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Visualizer of a Pokemon",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var template = `",
+							"<style type=\"text/css\">",
+							"    .sprites-table {font-size:14px;color:#333333;width:100%;border-width: 1px;border-color: #87ceeb;border-collapse: collapse;}",
+							"    .sprites-table th {font-size:18px;background-color:#87ceeb;border-width: 1px;padding: 8px;border-style: solid;border-color: #87ceeb;text-align:left;}",
+							"    .sprites-table tr {background-color:#ffffff;}",
+							"    .sprites-table td {font-size:14px;border-width: 1px;padding: 8px;border-style: solid;border-color: #87ceeb;}",
+							"    .sprites-table tr:hover {background-color:#e0ffff;}",
+							"</style>",
+							"",
+							"<table class=\"sprites-table\" border=\"1\">",
+							"    <tr>",
+							"        <th>Key</th>",
+							"        <th>Sprite</th>",
+							"    </tr>",
+							"    {{#each response}}",
+							"                <tr>",
+							"                    <td>{{@key}}</td>",
+							"                    <td><img src=\"{{this}}\" /></td>",
+							"                </tr>",
+							"    {{/each}}",
+							"        ",
+							"</table>",
+							"`;",
+							"",
+							"function constructVisualizerPayload() {",
+							"    let sprites = pm.response.json().sprites",
+							"    delete sprites.other",
+							"    delete sprites.versions",
+							"    return {response: sprites};",
+							"}",
+							"",
+							"pm.visualizer.set(template, constructVisualizerPayload());",
+							"",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{pokemonUrl}}",
+					"host": [
+						"{{pokemonUrl}}"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"variable": [
+		{
+			"key": "urlAbility",
+			"value": ""
+		},
+		{
+			"key": "pokemonUrl",
+			"value": ""
+		},
+		{
+			"key": "pokemonName",
+			"value": ""
+		}
+	]
+}
